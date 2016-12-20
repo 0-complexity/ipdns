@@ -11,7 +11,9 @@ from twisted.names import dns, server
 from ipdns.ipdns import Resolver
 
 class Options(usage.Options):
-  optParameters = [["domain", "d", None, "The top domain serving ipdns for. (required)"]]
+  optParameters = [["domain", "d", None, "The top domain serving ipdns for. (required)"],
+                   ["server", "s", None, "DNS for this mail server. (required)"],
+                   ["email", "e", None, "Email address of domain admin. (required)"]]
 
 @implementer(IServiceMaker, IPlugin)
 class MyServiceMaker(object):
@@ -23,7 +25,7 @@ class MyServiceMaker(object):
   def makeService(self, options):
     application = service.MultiService()
 
-    factory = server.DNSServerFactory(clients=[Resolver(options["domain"])])
+    factory = server.DNSServerFactory(clients=[Resolver(options["domain"], options["server"], options["email"])])
 
     tcp_dns_server = internet.TCPServer(53, factory)
     tcp_dns_server.setServiceParent(application)
