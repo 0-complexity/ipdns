@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'ipdns',
   packages = ['ipdns', 'twisted.plugins'],
-  version = '0.1.3',
+  version = '0.1.4',
   description = 'Stateless dns server serving ip addresses based on parsing the domain',
   author = 'Geert Audenaert',
   author_email = 'geert@greenitglobe.com',

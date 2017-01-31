@@ -9,11 +9,21 @@ log = Logger()
 
 class Resolver(object):
 
-    def __init__(self, domain, ns_server, ns_email):
+    def __init__(self, domain, ns_server, ns_email, ns_records):
         self.domain = domain
         self.ns_server = ns_server
         self.ns_email = ns_email
         self._matcher = re.compile(r'^.*?-?(\d+)\.%s$' % domain.replace('.', '\\.'))
+        self.ns_records = dict()
+        for record in ns_records.split(','):
+            ns, ip = record.split(':', 1)
+            name = "%s.%s" % (ns, domain)
+            self.ns_records[name] = dns.RRHeader(name=name,
+                payload=dns.Record_A(address=ip))
+        self.authority = dns.RRHeader(name=self.domain, type=dns.SOA,
+            payload=dns.Record_SOA(mname=self.ns_server, rname=self.ns_email,
+                                   serial = 1, refresh = "1H", retry = "1H",
+                                   expire = "1H", minimum = "1H"))
 
     def query(self, query, timeout=None):
 
@@ -23,6 +33,9 @@ class Resolver(object):
 
         name = query.name.name.decode("utf8")
 
+        if name in self.ns_records:
+            return [self.ns_records[name]], [self.authority], []
+
         match = self._matcher.match(name)
 
         try:
@@ -31,11 +44,8 @@ class Resolver(object):
                 answer = dns.RRHeader(name=name,
                     payload=dns.Record_A(address=str(netaddr.IPAddress(int(match.group(1))))))
                 answers.append(answer)
-            authority = dns.RRHeader(name=self.domain, type=dns.SOA,
-                    payload=dns.Record_SOA(mname=self.ns_server, rname=self.ns_email,
-                                           serial = 1, refresh = "1H", retry = "1H",
-                                           expire = "1H", minimum = "1H"))
-            authorities = [authority]
+
+            authorities = [self.authority]
             additional = []
             return answers, authorities, additional
         except:

@@ -13,7 +13,8 @@ from ipdns.ipdns import Resolver
 class Options(usage.Options):
   optParameters = [["domain", "d", None, "The top domain serving ipdns for. (required)"],
                    ["server", "s", None, "DNS for this mail server. (required)"],
-                   ["email", "e", None, "Email address of domain admin. (required)"]]
+                   ["email", "e", None, "Email address of domain admin. (required)"],
+                   ["nsrecords", "n", None, "NS records for the hosted domain. Eg: ns1:94.23.35.208,ns2:37.187.30.26 (required)"]]
 
 @implementer(IServiceMaker, IPlugin)
 class MyServiceMaker(object):
@@ -25,7 +26,7 @@ class MyServiceMaker(object):
   def makeService(self, options):
     application = service.MultiService()
 
-    factory = server.DNSServerFactory(clients=[Resolver(options["domain"], options["server"], options["email"])])
+    factory = server.DNSServerFactory(clients=[Resolver(options["domain"], options["server"], options["email"], options["nsrecords"])])
 
     tcp_dns_server = internet.TCPServer(53, factory)
     tcp_dns_server.setServiceParent(application)

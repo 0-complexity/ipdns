@@ -26,14 +26,15 @@ ipdns only needs one parameter which can only passed on the command line.
 ```
 Usage: twistd [options] ipdns [options]
 Options:
--d, --domain=  The top domain serving ipdns for. (required)
--s, --server=  DNS for this mail server. (required)
--e, --email=   Email address of domain admin. (required)
-    --version  Display Twisted version and exit.
-    --help     Display this help and exit.
+-d, --domain=    The top domain serving ipdns for. (required)
+-s, --server=    DNS for this mail server. (required)
+-e, --email=     Email address of domain admin. (required)
+-n, --nsrecords= NS records for the hosted domain. Eg: ns1:94.23.35.208,ns2:37.187.30.26 (required)
+    --version    Display Twisted version and exit.
+    --help       Display this help and exit.
 ```
 
 Use the following command to make ipdns serve ipaddresses for **yourdomain.foo**:
 ```
-twistd ipdns --domain=yourdomain.foo
+twistd ipdns --domain=yourdomain.foo --server=yourdnsserver.domain.name --email=john@foo.com --nsrecords=ns1:94.23.35.208,ns2:37.187.30.26
 ```
